@@ -42,6 +42,7 @@ Route files should remain thin. Business logic belongs in `features/`; service c
 - `app.json` configures portrait orientation, static web output, typed routes, and React Compiler.
 - No production screens from the AlgoScribe web app have been implemented yet.
 - No backend API contracts have been added yet.
+- Live web app reconnaissance is captured in `docs/WEB_APP_RECON.md` for the auth and Medicalscribe voice-processing flow.
 
 ## Navigation
 
@@ -57,6 +58,14 @@ Replace or restructure these routes when the actual app screen requirements are 
 ## API and Data Flow
 
 No app API layer is defined yet.
+
+The live web app uses an authenticated access-metadata pattern:
+
+- `POST /auth/signin` returns access and refresh JWTs.
+- `GET /user/find-all-access` returns module/access metadata used to resolve feature calls.
+- Generic feature calls are addressed by module and access name in code, then resolved to concrete REST URLs.
+
+See `docs/WEB_APP_RECON.md` for observed base URLs, endpoint inventory, and the audio extraction multipart contract.
 
 When APIs are added:
 
@@ -91,4 +100,3 @@ For each new feature, document:
 - loading, empty, error, and offline states
 - platform-specific behavior
 - release notes in `changelog/upcoming.md`
-
