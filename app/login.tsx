@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Input } from '../components/ui/Input';
+import { TextInput } from '../components/ui/TextInput';
 import { Button } from '../components/ui/Button';
+import { Typography } from '../components/ui/Typography';
 import { login, fetchUserAccess } from '../services/auth';
+import { theme } from '../constants/theme';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -20,10 +22,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email, password);
-      // Fetch access to ensure the token works and cache if necessary
       await fetchUserAccess();
-      
-      // Navigate to main tabs
       router.replace('/(tabs)/process-voice');
     } catch (error: any) {
       Alert.alert('Login Failed', error.message || 'An unexpected error occurred.');
@@ -40,12 +39,12 @@ export default function LoginScreen() {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.header}>
-            <Text style={styles.title}>CareAI</Text>
-            <Text style={styles.subtitle}>Sign in to Medicalscribe</Text>
+            <Typography.Heading style={styles.title}>CareAI</Typography.Heading>
+            <Typography.Subheading>Sign in to Medicalscribe</Typography.Subheading>
           </View>
 
           <View style={styles.form}>
-            <Input
+            <TextInput
               label="Email"
               placeholder="Enter your email"
               value={email}
@@ -56,7 +55,7 @@ export default function LoginScreen() {
               editable={!loading}
             />
 
-            <Input
+            <TextInput
               label="Password"
               placeholder="Enter your password"
               value={password}
@@ -66,7 +65,7 @@ export default function LoginScreen() {
             />
 
             <View style={styles.buttonContainer}>
-              <Button 
+              <Button.Primary 
                 title="Sign In" 
                 onPress={handleLogin} 
                 loading={loading} 
@@ -82,7 +81,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.colors.background.default,
   },
   keyboardView: {
     flex: 1,
@@ -90,26 +89,20 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 24,
+    padding: theme.spacing.lg,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: theme.spacing['3xl'],
   },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#007AFF',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
+    color: theme.colors.primary.DEFAULT,
+    marginBottom: theme.spacing.sm,
   },
   form: {
     width: '100%',
   },
   buttonContainer: {
-    marginTop: 24,
+    marginTop: theme.spacing.md,
   },
 });

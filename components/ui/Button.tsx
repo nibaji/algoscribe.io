@@ -1,70 +1,134 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import { Pressable, StyleSheet, ActivityIndicator, PressableProps, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import { theme } from '../../constants/theme';
+import { Typography } from './Typography';
 
-interface ButtonProps {
+export interface BaseButtonProps extends PressableProps {
   title: string;
-  onPress: () => void;
   loading?: boolean;
-  disabled?: boolean;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-  variant?: 'primary' | 'secondary';
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
-export function Button({ title, onPress, loading, disabled, style, textStyle, variant = 'primary' }: ButtonProps) {
-  const isPrimary = variant === 'primary';
-
+const BaseButton = ({ 
+  title, 
+  loading, 
+  style, 
+  textStyle, 
+  disabled, 
+  ...props 
+}: BaseButtonProps & { 
+  defaultStyle: ViewStyle; 
+  pressedStyle: ViewStyle; 
+  defaultTextStyle: TextStyle; 
+}) => {
   return (
     <Pressable
-      onPress={onPress}
-      disabled={disabled || loading}
       style={({ pressed }) => [
-        styles.button,
-        isPrimary ? styles.primary : styles.secondary,
-        (disabled || loading) && styles.disabled,
-        pressed && !disabled && !loading && styles.pressed,
+        styles.base,
+        props.defaultStyle,
+        pressed ? props.pressedStyle : null,
+        (disabled || loading) ? styles.disabled : null,
         style,
       ]}
+      disabled={disabled || loading}
+      {...props}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? '#fff' : '#007AFF'} />
+        <ActivityIndicator color={props.defaultTextStyle.color as string} />
       ) : (
-        <Text style={[styles.text, isPrimary ? styles.primaryText : styles.secondaryText, textStyle]}>
+        <Typography.Label style={[props.defaultTextStyle, textStyle]}>
           {title}
-        </Text>
+        </Typography.Label>
       )}
     </Pressable>
   );
-}
+};
+
+const Primary = (props: BaseButtonProps) => (
+  <BaseButton
+    {...props}
+    defaultStyle={styles.primaryBase}
+    pressedStyle={styles.primaryPressed}
+    defaultTextStyle={styles.primaryText}
+  />
+);
+
+const Secondary = (props: BaseButtonProps) => (
+  <BaseButton
+    {...props}
+    defaultStyle={styles.secondaryBase}
+    pressedStyle={styles.secondaryPressed}
+    defaultTextStyle={styles.secondaryText}
+  />
+);
+
+const Error = (props: BaseButtonProps) => (
+  <BaseButton
+    {...props}
+    defaultStyle={styles.errorBase}
+    pressedStyle={styles.errorPressed}
+    defaultTextStyle={styles.errorText}
+  />
+);
+
+export const Button = {
+  Primary,
+  Secondary,
+  Error,
+};
 
 const styles = StyleSheet.create({
-  button: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+  base: {
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.xl,
+    borderRadius: theme.radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  primary: {
-    backgroundColor: '#007AFF',
-  },
-  secondary: {
-    backgroundColor: '#F2F2F7',
+    flexDirection: 'row',
   },
   disabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
-  pressed: {
-    opacity: 0.8,
+  
+  // Primary
+  primaryBase: {
+    backgroundColor: theme.colors.primary.DEFAULT,
   },
-  text: {
-    fontSize: 16,
-    fontWeight: '600',
+  primaryPressed: {
+    backgroundColor: theme.colors.primary.dark,
   },
   primaryText: {
-    color: '#FFFFFF',
+    color: theme.colors.primary.content,
+    fontWeight: '600',
+    fontSize: theme.fontSize.md,
+  },
+  
+  // Secondary
+  secondaryBase: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: theme.colors.border.default,
+  },
+  secondaryPressed: {
+    backgroundColor: theme.colors.background.default,
   },
   secondaryText: {
-    color: '#007AFF',
+    color: theme.colors.text.primary,
+    fontWeight: '600',
+    fontSize: theme.fontSize.md,
+  },
+  
+  // Error
+  errorBase: {
+    backgroundColor: theme.colors.status.error,
+  },
+  errorPressed: {
+    backgroundColor: '#DC2626', // slightly darker red
+  },
+  errorText: {
+    color: theme.colors.text.inverse,
+    fontWeight: '600',
+    fontSize: theme.fontSize.md,
   },
 });

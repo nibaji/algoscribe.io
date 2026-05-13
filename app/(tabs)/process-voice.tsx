@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as DocumentPicker from 'expo-document-picker';
-import { Input } from '../../components/ui/Input';
+import { TextInput } from '../../components/ui/TextInput';
 import { Button } from '../../components/ui/Button';
+import { Typography } from '../../components/ui/Typography';
 import { extractVoiceInput } from '../../services/voice';
 import { logout } from '../../services/auth';
 import { Picker } from '@react-native-picker/picker';
+import { theme, shadows } from '../../constants/theme';
 
 export default function ProcessVoiceScreen() {
   const [patientId, setPatientId] = useState('');
@@ -77,18 +79,23 @@ export default function ProcessVoiceScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Process Voice</Text>
-        <Button title="Logout" onPress={handleLogout} variant="secondary" style={styles.logoutButton} />
+        <Typography.Heading>Process Voice</Typography.Heading>
+        <Button.Secondary 
+          title="Logout" 
+          onPress={handleLogout} 
+          style={styles.logoutButton}
+          textStyle={{ fontSize: theme.fontSize.sm }} 
+        />
       </View>
 
       <View style={styles.formCard}>
-        <Text style={styles.sectionTitle}>Patient Information</Text>
-        <Input label="Patient ID *" value={patientId} onChangeText={setPatientId} editable={!loading} />
-        <Input label="Age *" value={age} onChangeText={setAge} keyboardType="numeric" editable={!loading} />
-        <Input label="Name" value={name} onChangeText={setName} editable={!loading} />
-        <Input label="Mobile" value={mobile} onChangeText={setMobile} keyboardType="phone-pad" editable={!loading} />
+        <Typography.Subheading style={styles.sectionTitle}>Patient Information</Typography.Subheading>
+        <TextInput label="Patient ID *" value={patientId} onChangeText={setPatientId} editable={!loading} />
+        <TextInput label="Age *" value={age} onChangeText={setAge} keyboardType="numeric" editable={!loading} />
+        <TextInput label="Name" value={name} onChangeText={setName} editable={!loading} />
+        <TextInput label="Mobile" value={mobile} onChangeText={setMobile} keyboardType="phone-pad" editable={!loading} />
         
-        <Text style={styles.label}>Gender *</Text>
+        <Typography.Label style={styles.label}>Gender *</Typography.Label>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={gender}
@@ -104,26 +111,26 @@ export default function ProcessVoiceScreen() {
       </View>
 
       <View style={styles.formCard}>
-        <Text style={styles.sectionTitle}>Upload Audio</Text>
+        <Typography.Subheading style={styles.sectionTitle}>Upload Audio</Typography.Subheading>
         {audioFile ? (
           <View style={styles.fileInfo}>
-            <Text style={styles.fileName}>{audioFile.name}</Text>
-            <Text style={styles.fileSize}>{((audioFile.size || 0) / 1024).toFixed(2)} KB</Text>
+            <Typography.Paragraph style={styles.fileName}>{audioFile.name}</Typography.Paragraph>
+            <Typography.Label>{((audioFile.size || 0) / 1024).toFixed(2)} KB</Typography.Label>
           </View>
         ) : (
-          <Text style={styles.noFile}>No file selected</Text>
+          <Typography.Paragraph style={styles.noFile}>No file selected</Typography.Paragraph>
         )}
-        <Button title="Select Audio File" onPress={handlePickAudio} variant="secondary" disabled={loading} />
+        <Button.Secondary title="Select Audio File" onPress={handlePickAudio} disabled={loading} />
       </View>
 
-      <Button title="Extract (Smart Transcription)" onPress={handleExtract} loading={loading} style={styles.submitButton} />
+      <Button.Primary title="Extract (Smart Transcription)" onPress={handleExtract} loading={loading} style={styles.submitButton} />
 
       {result && (
         <View style={styles.resultCard}>
-          <Text style={styles.sectionTitle}>Medical Summary</Text>
-          <Text style={styles.resultText}>
+          <Typography.Subheading style={styles.sectionTitle}>Medical Summary</Typography.Subheading>
+          <Typography.Paragraph style={styles.resultText}>
             {JSON.stringify(result, null, 2)}
-          </Text>
+          </Typography.Paragraph>
         </View>
       )}
     </ScrollView>
@@ -133,84 +140,68 @@ export default function ProcessVoiceScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 16,
-    backgroundColor: '#F2F2F7',
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.background.default,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 40,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#000',
+    marginBottom: theme.spacing.lg,
+    marginTop: theme.spacing['2xl'],
   },
   logoutButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
   },
   formCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: theme.colors.background.surface,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    ...shadows.sm,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 16,
-    color: '#000',
+    marginBottom: theme.spacing.md,
+    color: theme.colors.text.primary,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: 8,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing.xs,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#E5E5EA',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    marginBottom: 16,
+    borderColor: theme.colors.border.default,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.background.surface,
+    marginBottom: theme.spacing.md,
     overflow: 'hidden',
+    minHeight: 48,
+    justifyContent: 'center',
   },
   fileInfo: {
-    marginBottom: 16,
+    marginBottom: theme.spacing.md,
   },
   fileName: {
-    fontSize: 16,
     fontWeight: '500',
   },
-  fileSize: {
-    fontSize: 14,
-    color: '#666',
-  },
   noFile: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 16,
+    color: theme.colors.text.tertiary,
+    marginBottom: theme.spacing.md,
     fontStyle: 'italic',
   },
   submitButton: {
-    marginTop: 8,
-    marginBottom: 32,
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.xl,
   },
   resultCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 32,
+    backgroundColor: theme.colors.background.surface,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.xl,
+    ...shadows.sm,
   },
   resultText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: theme.fontSize.sm,
   },
 });
