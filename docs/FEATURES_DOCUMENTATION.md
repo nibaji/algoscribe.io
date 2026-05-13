@@ -38,36 +38,31 @@ Route files should remain thin. Business logic belongs in `features/`; service c
 
 ## Current App State
 
-- Expo Router tab template is present.
-- `app.json` configures portrait orientation, static web output, typed routes, and React Compiler.
-- No production screens from the AlgoScribe web app have been implemented yet.
-- No backend API contracts have been added yet.
-- Live web app reconnaissance is captured in `docs/WEB_APP_RECON.md` for the auth and Medicalscribe voice-processing flow.
+- Added `app/login.tsx` for authentication flow.
+- Added `app/(tabs)/process-voice.tsx` for the main dictation and transcription UI.
+- Integrated `expo-secure-store` for token management.
+- Integrated `expo-document-picker` for audio upload.
+- Setup `services/api.ts`, `services/auth.ts`, and `services/voice.ts` for handling backend communication.
+- Web app reconnaissance is captured in `docs/WEB_APP_RECON.md`.
 
 ## Navigation
 
 Current routes come from the starter template:
 
-- `app/_layout.tsx`
-- `app/(tabs)/index.tsx`
-- `app/(tabs)/explore.tsx`
-- `app/modal.tsx`
+- `app/_layout.tsx` (Root layout mapping `index`, `login`, and `(tabs)`)
+- `app/index.tsx` (Entry route handling redirection based on Auth State)
+- `app/login.tsx` (Login Screen)
+- `app/(tabs)/_layout.tsx` (Tab navigation)
+- `app/(tabs)/process-voice.tsx` (Main Voice Processing UI)
 
 Replace or restructure these routes when the actual app screen requirements are provided. Keep navigation notes updated here.
 
 ## API and Data Flow
 
-No app API layer is defined yet.
-
-The live web app uses an authenticated access-metadata pattern:
-
-- `POST /auth/signin` returns access and refresh JWTs.
-- `GET /user/find-all-access` returns module/access metadata used to resolve feature calls.
-- Generic feature calls are addressed by module and access name in code, then resolved to concrete REST URLs.
-
-See `docs/WEB_APP_RECON.md` for observed base URLs, endpoint inventory, and the audio extraction multipart contract.
-
-When APIs are added:
+The app currently connects to `https://emr-api-uae-test.blackglacier-b674de0c.uaenorth.azurecontainerapps.io`.
+- `services/auth.ts` implements `POST /auth/signin` and `GET /user/find-all-access`.
+- `services/voice.ts` implements `POST /medicalscribe/extract-input` with multipart/form-data upload.
+- `services/api.ts` provides `fetchWithAuth` wrapper injecting Bearer token from SecureStore.
 
 - Create service modules under `services/`.
 - Keep request/response types explicit.
